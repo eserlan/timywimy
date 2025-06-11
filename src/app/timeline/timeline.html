@@ -38,17 +38,6 @@
 <mat-card>
   <mat-card-header>Timeline</mat-card-header>
   <mat-card-content>
-
-    <ul>
-      <li *ngFor="let event of timelineEvents" (click)="selectEntry(event)">
-        <div class="event-date">
-          {{ event.date | date }}
-          <ng-container *ngIf="event.endDate">
-            - {{ event.endDate | date }}
-          </ng-container>
-        </div>
-        <div class="event-title">{{ event.title }}</div>
-      </li>
-    </ul>
+    <div id="d3TimelineContainer" #d3TimelineContainer></div>
   </mat-card-content>
 </mat-card>

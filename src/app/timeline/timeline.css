@@ -32,6 +32,11 @@ li {
   cursor: pointer; /* Indicate it's clickable */
 }
 
+#d3TimelineContainer {
+  height: 300px; /* Set a fixed height for the D3 container */
+  border: 1px solid black; /* Add a border for visibility during development */
+}
+
 li:hover {
   background-color: #f0f0f0; /* Change background on hover */
 }
@@ -47,4 +52,11 @@ li::before {
   border-radius: 50%;
   border: 0.125rem solid #fff; /* White border around marker */
   z-index: 1;
+}
+
+li.is-period::before {
+  background-color: #ff9800; /* Change background color for periods */
+  border-radius: 0; /* Make it a square */
+  width: 0.8125rem; /* Adjust size slightly */
+  height: 0.8125rem; /* Adjust size slightly */
 }

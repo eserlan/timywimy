@@ -1,0 +1,50 @@
+mat-card {
+  margin: 1.25rem; /* Add margin around the card */
+  max-width: 25rem; /* Limit the card width */
+}
+
+mat-card-content {
+  padding: 1.25rem; /* Add padding inside the card content */
+}
+
+form {
+  display: flex;
+  flex-direction: column; /* Arrange form elements in a column */
+  gap: 15px; /* Add spacing between form elements */
+}
+
+button[mat-raised-button] {
+  align-self: center; /* Center the submit button */
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+  margin-top: 2.5rem;
+  border-left: 0.125rem solid #ccc; /* Vertical timeline line */
+  position: relative;
+}
+
+li {
+  padding: 1.25rem 1.25rem 1.25rem 1.875rem; /* Add padding and space for marker */
+  position: relative;
+  margin-bottom: 0.5rem; /* This was already in rem */
+  cursor: pointer; /* Indicate it's clickable */
+}
+
+li:hover {
+  background-color: #f0f0f0; /* Change background on hover */
+}
+
+li::before {
+  content: '';
+  position: absolute;
+  left: -0.625rem; /* Position the marker on the line */
+  top: 1.5625rem;
+  width: 0.9375rem;
+  height: 0.9375rem;
+  background-color: #007bff; /* Marker color */
+  border-radius: 50%;
+  border: 0.125rem solid #fff; /* White border around marker */
+  z-index: 1;
+}

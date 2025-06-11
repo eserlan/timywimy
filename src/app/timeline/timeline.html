@@ -1,0 +1,54 @@
+<mat-card>
+  <mat-card-content>
+    <form (ngSubmit)="onSubmit()">
+      <div>
+        <mat-form-field appearance="fill">
+          <mat-label>Title</mat-label>
+          <input matInput type="text" id="title" name="title" [(ngModel)]="newEntryTitle" required>
+        </mat-form-field>
+      </div>
+      <div>
+        <mat-form-field appearance="fill">
+          <mat-label>Description</mat-label>
+          <input matInput type="text" id="description" name="description" [(ngModel)]="newEntryDescription">
+        </mat-form-field>
+      </div>
+      <div>
+        <mat-form-field appearance="fill">
+          <mat-label>Date</mat-label>
+          <input matInput [matDatepicker]="picker" id="date" name="date" [(ngModel)]="newEntryDate" required>
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+      </div>
+      <div>
+        <mat-form-field appearance="fill">
+          <mat-label>End Date</mat-label>
+          <input matInput [matDatepicker]="endPicker" id="endDate" name="endDate" [(ngModel)]="newEntryEndDate">
+          <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
+          <mat-datepicker #endPicker></mat-datepicker>
+        </mat-form-field>
+      </div>
+      <button mat-raised-button color="primary" type="submit">{{ selectedEntry ? 'Update Entry' : 'Add Entry'
+        }}</button>
+    </form>
+  </mat-card-content>
+</mat-card>
+
+<mat-card>
+  <mat-card-header>Timeline</mat-card-header>
+  <mat-card-content>
+
+    <ul>
+      <li *ngFor="let event of timelineEvents" (click)="selectEntry(event)">
+        <div class="event-date">
+          {{ event.date | date }}
+          <ng-container *ngIf="event.endDate">
+            - {{ event.endDate | date }}
+          </ng-container>
+        </div>
+        <div class="event-title">{{ event.title }}</div>
+      </li>
+    </ul>
+  </mat-card-content>
+</mat-card>

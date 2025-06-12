@@ -8,9 +8,12 @@ import {MatDatepickerModule} from '@angular/material/datepicker';
 import {MatNativeDateModule} from '@angular/material/core';
 import {MatCardModule} from '@angular/material/card';
 import {MatButtonModule} from '@angular/material/button';
+import {MatProgressBarModule} from '@angular/material/progress-bar';
+
 import {NgxEchartsModule} from 'ngx-echarts';
-import {EChartsOption} from 'echarts'; // Import the EChartsOption type
-import type {EChartsType} from 'echarts/types/dist/shared'; // Import EChartsType
+import {EChartsOption} from 'echarts';
+import type {EChartsType} from 'echarts/types/dist/shared';
+
 interface TimelineEvent {
   id?: string;
   title: string;
@@ -29,9 +32,11 @@ interface TimelineEvent {
     MatInputModule,
     MatDatepickerModule,
     MatNativeDateModule,
-    MatButtonModule, MatButtonModule,
-    NgxEchartsModule,
-    MatCardModule
+    MatButtonModule,
+    MatButtonModule,
+    MatCardModule,
+    MatProgressBarModule,
+    NgxEchartsModule
   ],
   templateUrl: './timeline.html',
   styleUrl: './timeline.css',
@@ -43,6 +48,7 @@ export class TimelineComponent implements OnInit {
   formData: TimelineEvent = {title: '', description: null, date: null, endDate: null}; // Use a single object for form data
   selectedEntry: TimelineEvent | null = null;
 
+  loading = true;
 
   newEntryDate: Date | null = null;
   newEntryEndDate: Date | null = null;
@@ -54,6 +60,8 @@ export class TimelineComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.loading = true;
+
     this.timelineService.getTimelineEvents().subscribe((events) => {
       this.timelineEvents = events.map(event => ({
         ...event,
@@ -63,6 +71,7 @@ export class TimelineComponent implements OnInit {
       console.log('Timeline Events:', this.timelineEvents);
       this.resetForm(); // Initialize form with empty data
       this.updateChartOptions();
+      this.loading = false;
     });
   }
 

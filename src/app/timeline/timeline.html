@@ -36,6 +36,12 @@
 </mat-card>
 
 <mat-card>
+  <mat-card-header>Timeline Chart</mat-card-header>
+  <mat-card-content>
+    <div echarts [options]="chartOptions" [autoResize]="true" style="width: 100%; height: 400px;"></div>
+  </mat-card-content>
+</mat-card>
+<mat-card>
   <mat-card-header>Timeline</mat-card-header>
   <mat-card-content>
 

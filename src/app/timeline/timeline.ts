@@ -8,6 +8,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
+import { NgxEchartsModule } from 'ngx-echarts';
 
 interface TimelineEvent {
   id?: string;
@@ -27,7 +28,8 @@ interface TimelineEvent {
     MatInputModule,
     MatDatepickerModule,
     MatNativeDateModule,
-    MatButtonModule,
+    MatButtonModule,MatButtonModule,
+    NgxEchartsModule,
     MatCardModule
   ],
   templateUrl: './timeline.html',
@@ -41,6 +43,7 @@ export class TimelineComponent implements OnInit  {
   newEntryDate: Date | null = null;
   newEntryEndDate: Date | null = null;
   timelineEvents: TimelineEvent[] = [];
+  chartOptions: any;
 
   constructor(private timelineService: TimelineService) {}
 
@@ -50,10 +53,34 @@ export class TimelineComponent implements OnInit  {
         ...event,
         date: event.date && typeof event.date.toDate === 'function' ? event.date.toDate() : (event.date ? new Date(event.date) : null),
         endDate: event.endDate && typeof event.endDate.toDate === 'function' ? event.endDate.toDate() : (event.endDate ? new Date(event.endDate) : null)
-
       }));
       console.log('Timeline Events:', this.timelineEvents);
+      this.updateChartOptions();
     });
+  }
+
+  updateChartOptions(): void {
+    console.log('creating chart options', this.timelineEvents);
+    this.chartOptions = {
+      xAxis: {
+        type: 'category',
+        data: this.timelineEvents.map(event => event.title),
+      },
+      yAxis: {
+        type: 'value',
+      },
+      series: [
+        {
+          data: this.timelineEvents.map(event => { // Use this.timelineEvents here
+            if (event.date && event.endDate) {
+              return (event.endDate.getTime() - event.date.getTime()) / (1000 * 60 * 60 * 24); // Duration in days
+            }
+            return 0;
+          }),
+          type: 'bar',
+        },
+      ],
+    };
   }
 
   onSubmit() {

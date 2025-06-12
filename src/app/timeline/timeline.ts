@@ -1,16 +1,16 @@
-import { Component, OnInit } from '@angular/core';
-import { TimelineService } from '../timeline.service';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule } from '@angular/material/core';
-import { MatCardModule } from '@angular/material/card';
-import { MatButtonModule } from '@angular/material/button';
-import { NgxEchartsModule } from 'ngx-echarts';
-import { EChartsOption } from 'echarts'; // Import the EChartsOption type
-import type { EChartsType } from 'echarts/types/dist/shared'; // Import EChartsType
+import {Component, OnInit, ChangeDetectorRef} from '@angular/core';
+import {TimelineService} from '../timeline.service';
+import {CommonModule} from '@angular/common';
+import {FormsModule} from '@angular/forms';
+import {MatFormFieldModule} from '@angular/material/form-field';
+import {MatInputModule} from '@angular/material/input';
+import {MatDatepickerModule} from '@angular/material/datepicker';
+import {MatNativeDateModule} from '@angular/material/core';
+import {MatCardModule} from '@angular/material/card';
+import {MatButtonModule} from '@angular/material/button';
+import {NgxEchartsModule} from 'ngx-echarts';
+import {EChartsOption} from 'echarts'; // Import the EChartsOption type
+import type {EChartsType} from 'echarts/types/dist/shared'; // Import EChartsType
 interface TimelineEvent {
   id?: string;
   title: string;
@@ -40,7 +40,7 @@ interface TimelineEvent {
 })
 export class TimelineComponent implements OnInit {
 
-  formData: TimelineEvent = { title: '', description: null, date: null, endDate: null }; // Use a single object for form data
+  formData: TimelineEvent = {title: '', description: null, date: null, endDate: null}; // Use a single object for form data
   selectedEntry: TimelineEvent | null = null;
 
 
@@ -50,7 +50,8 @@ export class TimelineComponent implements OnInit {
   private echartsInstance!: EChartsType; // Property to hold the ECharts instance
   chartOptions: EChartsOption = {};
 
-  constructor(private timelineService: TimelineService) { }
+  constructor(private timelineService: TimelineService, private cdr: ChangeDetectorRef) {
+  }
 
   ngOnInit() {
     this.timelineService.getTimelineEvents().subscribe((events) => {
@@ -90,78 +91,45 @@ export class TimelineComponent implements OnInit {
       });
 
     this.chartOptions = {
+      ...this.defaultChartOptions,
       tooltip: {
-        trigger: 'axis',
-        formatter: this.formatTooltip.bind(this), // Assign the formatter function
-        axisPointer: {
-          type: 'line',
-          label: {
-            backgroundColor: '#6a7985'
-          }
-        },
-        position: ['50%', 10] as any // Center horizontally, 10px from top
-      },
-      xAxis: {
-        type: 'time'
+        ...this.defaultChartOptions.tooltip,
+        formatter: this.formatTooltip.bind(this)
       },
       yAxis: {
-        type: 'category',
-        data: this.timelineEvents.map(event => event.title), // Include all titles for y-axis categories
+        ...this.defaultChartOptions.yAxis,
+        data: this.timelineEvents.map(event => event.title)
       },
       series: [
-        {
-          data: periodScatterData,
-          type: 'scatter', // Change type to scatter
-          symbolSize: 5, // Example size for scatter dots
-          encode: {
-            x: 0, // Map the first column (date) to the x-axis
-            y: 1, // Map the second column (title) to the y-axis
-          },
-          itemStyle: {
-            color: '#a90000' // Example color for period scatter dots
-          },
-        },
-        {
-          data: singleScatterData,
-          type: 'scatter',
-          symbolSize: 10, // Example size for scatter dots
-          encode: {
-            x: 0, // Map the first column of data to the x-axis (date)
-            y: 1  // Map the second column of data to the y-axis (title)
-          },
-          itemStyle: {
-            color: '#00a900' // Example color for scatter dots
-          }
-        }
-      ],
+        { ...(Array.isArray(this.defaultChartOptions.series) ? this.defaultChartOptions.series[0] : {}), data: periodScatterData },
+        { ...(Array.isArray(this.defaultChartOptions.series) ? this.defaultChartOptions.series[1] : {}), data: singleScatterData }
+      ]
     };
   }
 
   onChartInit(ec: EChartsType) {
     this.echartsInstance = ec;
-    // Add click listener after chart options are updated and instance is available
     this.echartsInstance.on('click', (params: any) => {
-      console.log('Clicked data params:', params.data);
       if (params.componentType === 'series') {
+        const seriesIndex = params.seriesIndex;
         const dataIndex = params.dataIndex;
         let eventId: string | undefined;
 
-        if (this.chartOptions.series && Array.isArray(this.chartOptions.series) && this.chartOptions.series.length > 0 && this.chartOptions.series[0].data && Array.isArray(this.chartOptions.series[0].data)) {
-          eventId = (this.chartOptions.series[0].data[dataIndex] as any)[2];
+        if (
+          this.chartOptions.series &&
+          Array.isArray(this.chartOptions.series) &&
+          this.chartOptions.series[seriesIndex]?.data &&
+          Array.isArray(this.chartOptions.series[seriesIndex].data)
+        ) {
+          eventId = (this.chartOptions.series[seriesIndex].data[dataIndex] as any)[2];
         }
-        let clickedEvent: TimelineEvent | undefined;
 
         if (eventId !== undefined) {
-          // Find the original event object using the ID
-          clickedEvent = this.timelineEvents.find(event => event.id === eventId);
-          console.log('clickedEvent', clickedEvent);
+          const clickedEvent = this.timelineEvents.find(event => event.id === eventId);
           if (clickedEvent) {
-            console.log('setting select entry');
             this.selectEntry(clickedEvent);
           }
         }
-
-
       }
     });
   }
@@ -235,19 +203,76 @@ export class TimelineComponent implements OnInit {
     }
 
 
-
-
   }
 
   selectEntry(event: TimelineEvent): void {
     // Assign the selected event data to the formData, creating a copy to avoid
     // directly modifying the original event object in the timelineEvents array
-    this.formData = { ...event };
+    this.formData = {...event};
     this.selectedEntry = event; // Keep selectedEntry for list highlighting if needed
+    this.cdr.detectChanges(); // Force update
   }
 
   resetForm(): void {
-    this.formData = { title: '', description: null, date: null, endDate: null };
+    this.formData = {title: '', description: null, date: null, endDate: null};
     this.selectedEntry = null; // Deselect in the list when resetting form
   }
+
+  // Add this field to your class
+  defaultChartOptions: EChartsOption = {
+    tooltip: {
+      trigger: 'axis',
+      axisPointer: {
+        type: 'line',
+        label: { backgroundColor: '#6a7985' }
+      },
+      position: ['50%', 10] as any
+    },
+    xAxis: { type: 'time' },
+    yAxis: { type: 'category', data: [] },
+    series: [
+      {
+        data: [],
+        type: 'scatter',
+        symbolSize: 10,
+        encode: { x: 0, y: 1 },
+        itemStyle: { color: '#a90000' },
+        label: {
+          show: true,
+          position: 'bottom',
+          formatter: (params: any): string => {
+            if (
+              params &&
+              Array.isArray(params.value) &&
+              typeof params.value[1] === 'string'
+            ) {
+              const event = this.timelineEvents.find(e => e.title === params.value[1]);
+              if (
+                event &&
+                event.date &&
+                typeof params.value[0] === 'number' &&
+                params.value[0] === event.date.getTime()
+              ) {
+                return params.value[1];
+              }
+            }
+            return '';
+          }
+        },
+      },
+      {
+        data: [],
+        type: 'scatter',
+        symbolSize: 15,
+        encode: { x: 0, y: 1 },
+        itemStyle: { color: '#2543ec' },
+        label: {
+          show: true,
+          position: 'bottom',
+          formatter: (params) => params.name // or use params.value if needed
+        },
+      }
+    ]
+  };
+
 }

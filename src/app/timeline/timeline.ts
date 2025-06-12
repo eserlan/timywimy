@@ -36,7 +36,7 @@ interface TimelineEvent {
 })
 export class TimelineComponent implements OnInit  {
   newEntryDescription: string = '';
-  newEntryTitle: string | null = '';
+  newEntryTitle: string = '';
   selectedEntry: TimelineEvent | null = null;
   newEntryDate: Date | null = null;
   newEntryEndDate: Date | null = null;

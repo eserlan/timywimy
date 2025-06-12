@@ -5,7 +5,8 @@ import { getFirestore, provideFirestore } from '@angular/fire/firestore';
 import { provideEchartsCore } from 'ngx-echarts'; // Import the service
 import { CanvasRenderer } from 'echarts/renderers'; // Import the renderer
 import { BarChart } from 'echarts/charts'; // Import the chart type
-import { GridComponent } from 'echarts/components'; // Import the component
+import { ScatterChart } from 'echarts/charts'; // Import the chart type
+import { GridComponent, TooltipComponent } from 'echarts/components'; // Import the component
 
 import { routes } from './app.routes';
 import * as echarts from 'echarts/core';
@@ -24,7 +25,7 @@ const environment = {
 
 // Register the necessary components and renderer
 echarts.use([
-  CanvasRenderer, BarChart, GridComponent
+  CanvasRenderer, BarChart, ScatterChart, GridComponent, TooltipComponent
 ]);
 
 export const appConfig: ApplicationConfig = {

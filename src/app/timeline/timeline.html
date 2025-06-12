@@ -1,4 +1,11 @@
 <mat-card>
+  <mat-card-header>Timeline Chart</mat-card-header>
+  <mat-card-content>
+    <div echarts [options]="chartOptions" [autoResize]="true" style="width: 100%; height: 400px;" (chartInit)="onChartInit($event)"></div>
+  </mat-card-content>
+</mat-card>
+
+<mat-card>
   <mat-card-content>
     <form (ngSubmit)="onSubmit()">
       <div>
@@ -31,13 +38,9 @@
       </div>
       <button mat-raised-button color="primary" type="submit">{{ selectedEntry ? 'Update Entry' : 'Add Entry'
         }}</button>
+      <button mat-raised-button color="primary" *ngIf="selectedEntry" (click)="resetForm()">
+        New Entry
+      </button>
     </form>
-  </mat-card-content>
-</mat-card>
-
-<mat-card>
-  <mat-card-header>Timeline Chart</mat-card-header>
-  <mat-card-content>
-    <div echarts [options]="chartOptions" [autoResize]="true" style="width: 100%; height: 400px;" (chartInit)="onChartInit($event)"></div>
   </mat-card-content>
 </mat-card>

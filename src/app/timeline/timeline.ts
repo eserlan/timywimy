@@ -1,18 +1,19 @@
-import {Component, OnInit, ChangeDetectorRef} from '@angular/core';
-import {TimelineService} from '../timeline.service';
-import {CommonModule} from '@angular/common';
-import {FormsModule} from '@angular/forms';
-import {MatFormFieldModule} from '@angular/material/form-field';
-import {MatInputModule} from '@angular/material/input';
-import {MatDatepickerModule} from '@angular/material/datepicker';
-import {MatNativeDateModule} from '@angular/material/core';
-import {MatCardModule} from '@angular/material/card';
-import {MatButtonModule} from '@angular/material/button';
-import {MatProgressBarModule} from '@angular/material/progress-bar';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { TimelineService } from '../timeline.service';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
+import { MatCardModule } from '@angular/material/card';
+import { MatButtonModule } from '@angular/material/button';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatExpansionModule } from '@angular/material/expansion';
 
-import {NgxEchartsModule} from 'ngx-echarts';
-import {EChartsOption} from 'echarts';
-import type {EChartsType} from 'echarts/types/dist/shared';
+import { NgxEchartsModule } from 'ngx-echarts';
+import { EChartsOption } from 'echarts';
+import type { EChartsType } from 'echarts/types/dist/shared';
 
 interface TimelineEvent {
   id?: string;
@@ -35,6 +36,7 @@ interface TimelineEvent {
     MatButtonModule,
     MatButtonModule,
     MatCardModule,
+    MatExpansionModule, // Add MatExpansionModule here
     MatProgressBarModule,
     NgxEchartsModule
   ],
@@ -45,11 +47,12 @@ interface TimelineEvent {
 })
 export class TimelineComponent implements OnInit {
 
-  formData: TimelineEvent = {title: '', description: null, date: null, endDate: null}; // Use a single object for form data
+  formData: TimelineEvent = { title: '', description: null, date: null, endDate: null }; // Use a single object for form data
   selectedEntry: TimelineEvent | null = null;
 
   loading = true;
 
+  showAddEntryForm = false; // Add this property
   newEntryDate: Date | null = null;
   newEntryEndDate: Date | null = null;
   timelineEvents: TimelineEvent[] = [];
@@ -215,16 +218,32 @@ export class TimelineComponent implements OnInit {
   }
 
   selectEntry(event: TimelineEvent): void {
+    // console.log('select entry: ', event);
     // Assign the selected event data to the formData, creating a copy to avoid
     // directly modifying the original event object in the timelineEvents array
-    this.formData = {...event};
+    this.formData = { ...event };
     this.selectedEntry = event; // Keep selectedEntry for list highlighting if needed
     this.cdr.detectChanges(); // Force update
   }
 
   resetForm(): void {
-    this.formData = {title: '', description: null, date: null, endDate: null};
+    this.formData = { title: '', description: null, date: null, endDate: null };
     this.selectedEntry = null; // Deselect in the list when resetting form
+  }
+
+  openAddEntryForm(): void {
+    this.showAddEntryForm = true;
+    this.resetForm();
+  }
+
+  closeAddEntryForm(): void {
+    this.showAddEntryForm = false;
+    this.resetForm();
+  }
+
+  cancelEdit(): void {
+    this.selectedEntry = null;
+    this.closeAddEntryForm(); // Close the form as well
   }
 
   // Add this field to your class

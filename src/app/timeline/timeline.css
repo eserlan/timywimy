@@ -1,23 +1,23 @@
-mat-card {
+mat-card, mat-expansion-panel {
   margin: 1.25rem; /* Add margin around the card */
   max-width: 25rem; /* Limit the card width */
+  max-width: 25rem;
   margin-left: auto;
   margin-right: auto;
 }
-
 @media (max-width: 600px) {
-  mat-card {
+  mat-card, mat-expansion-panel {
     max-width: 90%;
   }
 }
 
 @media (min-width: 601px) and (max-width: 1024px) {
-  mat-card {
+  mat-card, mat-expansion-panel {
     max-width: 80%;
   }
 }
 @media (min-width: 1025px) {
-  mat-card {
+  mat-card, mat-expansion-panel {
     max-width: 60%;
   }
 }
@@ -26,8 +26,9 @@ mat-card-content {
   padding: 1.25rem; /* Add padding inside the card content */
 }
 
-form {
-  display: flex;
+
+mat-expansion-panel-body {
+  padding: 1.25rem;
   flex-direction: column; /* Arrange form elements in a column */
   gap: 15px; /* Add spacing between form elements */
 }
